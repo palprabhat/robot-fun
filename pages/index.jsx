@@ -37,6 +37,7 @@ export default function Home() {
     }
   };
 
+  // Fetch initial state of Robot when page loads.
   useEffect(() => {
     const getState = async () => {
       const response = await fetch(`${API_URL}/state`);
@@ -51,6 +52,8 @@ export default function Home() {
   useEffect(() => {
     if (failed >= 3) {
       setShowRepairModal(true);
+    } else if (failed != 0) {
+      setShowFailedModal(true);
     }
   }, [failed]);
 
@@ -78,12 +81,10 @@ export default function Home() {
       } else {
         setFailed((prev) => prev + 1);
         updateRobotState(RobotStates.FAILED, action, response.status);
-        setShowFailedModal(true);
       }
     } catch (err) {
       setFailed((prev) => prev + 1);
       updateRobotState(RobotStates.FAILED, action, 500);
-      setShowFailedModal(true);
     } finally {
       setPerformingAction(false);
     }
@@ -92,6 +93,7 @@ export default function Home() {
   return (
     <>
       <Navbar onShowHistory={() => setShowHistory(true)} />
+
       <main className="flex flex-col justify-center items-center p-8">
         <div
           className="relative bg-gray-800 rounded-md py-8 px-12"
@@ -121,56 +123,58 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-        <History
-          history={history}
-          show={showHistory}
-          onClose={() => setShowHistory(false)}
-        />
-
-        <Modal
-          id="modal-failed"
-          isOpen={showFailedModal}
-          onClose={() => setShowFailedModal(false)}
-        >
-          <div className="flex flex-col space-y-6 max-w-xs">
-            <div>The robot has failed unexpectedly!</div>
-            <div className="flex justify-center items-center px-6">
-              <Button onClick={() => setShowFailedModal(false)}>Ok</Button>
-            </div>
-          </div>
-        </Modal>
-
-        <Modal
-          id="modal-repair"
-          isOpen={showRepairModal}
-          onClose={() => setShowRepairModal(false)}
-        >
-          <button
-            className="absolute m-3 top-0 right-0 outline-none focus:outline-none"
-            onClick={() => setShowRepairModal(false)}
-          >
-            X
-          </button>
-          <div className="flex flex-col space-y-6 max-w-xs">
-            <div>
-              The robot has failed multiple times do you want to repair it?
-            </div>
-            <div className="flex justify-between items-center px-6">
-              <Button onClick={() => setShowRepairModal(false)}>Cancel</Button>
-              <Button
-                onClick={() => {
-                  performAction(Actions.REPAIR);
-                  setShowRepairModal(false);
-                }}
-                disabled={performingAction}
-              >
-                {Actions.REPAIR}
-              </Button>
-            </div>
-          </div>
-        </Modal>
       </main>
+
+      <History
+        history={history}
+        show={showHistory}
+        onClose={() => setShowHistory(false)}
+      />
+
+      {/* Show this Modal when Robot returns Failed state */}
+      <Modal
+        id="modal-failed"
+        isOpen={showFailedModal}
+        onClose={() => setShowFailedModal(false)}
+      >
+        <div className="flex flex-col space-y-6 max-w-xs">
+          <div>The robot has failed unexpectedly!</div>
+          <div className="flex justify-center items-center px-6">
+            <Button onClick={() => setShowFailedModal(false)}>Ok</Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Show this Modal when Robot has failed 3 times */}
+      <Modal
+        id="modal-repair"
+        isOpen={showRepairModal}
+        onClose={() => setShowRepairModal(false)}
+      >
+        <button
+          className="absolute m-3 top-0 right-0 outline-none focus:outline-none"
+          onClick={() => setShowRepairModal(false)}
+        >
+          X
+        </button>
+        <div className="flex flex-col space-y-6 max-w-xs">
+          <div>
+            The robot has failed multiple times do you want to repair it?
+          </div>
+          <div className="flex justify-between items-center px-6">
+            <Button onClick={() => setShowRepairModal(false)}>Cancel</Button>
+            <Button
+              onClick={() => {
+                performAction(Actions.REPAIR);
+                setShowRepairModal(false);
+              }}
+              disabled={performingAction}
+            >
+              {Actions.REPAIR}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }
