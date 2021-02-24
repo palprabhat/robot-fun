@@ -1,34 +1,49 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Requirements
 
-## Getting Started
+- [x] Use React js. You can add any other modules you like.
+- [x] The user should be able to click buttons to change the state of the robot. It should be clear which actions are available to the user given the state of the robot.
+- [x] This sure is a finicky robot. Some of the API calls you make will fail at random with HTTP error 503. If this happens, make the API call again without prompting the user.
+- [x] Some of the API calls have purposely been slowed down. Make sure that the interface handles this gracefully.
+- [x] Sometimes you will find that the robot is in a different state than you expect. For example, the robot will randomly switch to the `FAILED` state. Make sure that the interface informs the user of this fact and handles this situation properly.
+- [x] If the robot fails too often, the user may want to have it repaired. When the robot reaches the `FAILED` state for the _third time_, the user should be prompted with a choice to put the robot in 'repair' mode. The fail count should be reset when the page is refreshed.
+- [x] The user should be able to see a history of commands sent by the UI to the robot, including a timestamp indicating when the command was issued. This list does not have to be saved between page refreshes.
 
-First, run the development server:
+# API
 
-```bash
-npm run dev
-# or
-yarn dev
+## /state
+
+Returns the current robot state as a JSON string.
+
+## /action
+
+Control the robot by making an AJAX call to this endpoint. The body of the API call should be a JSON encoded object with the key `action` set to one of the commands. To see the available commands, check out the implementation of the Python server.
+
+For example, the first call to the robot would be
+
+```
+{ "action": "start" }
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Example curl
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+```
+curl -X POST http://localhost:5000/action \
+  -H 'content-type: application/json' \
+  -d '{ "action": "start" }'
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+# Robot
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+The robot works with both Python 2 and 3.
 
-## Learn More
+```bash
+pip install -r requirements.txt
+```
 
-To learn more about Next.js, take a look at the following resources:
+Run the Application
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+python robot.py
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+The API is now available at `http://localhost:5000`
