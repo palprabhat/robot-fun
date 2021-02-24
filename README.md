@@ -40,10 +40,27 @@ The robot works with both Python 2 and 3.
 pip install -r requirements.txt
 ```
 
-Run the Application
+Run the API server
 
 ```bash
 python robot.py
 ```
 
 The API is now available at `http://localhost:5000`
+
+
+# Application
+
+Install packages
+
+```
+yarn
+```
+
+Run App
+
+```
+yarn dev
+```
+
+The application is now available at `http://localhost:3000`
